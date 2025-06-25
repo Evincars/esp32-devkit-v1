@@ -2,6 +2,7 @@
 #include <ESPAsyncWebServer.h>
 #include <WiFi.h>
 
+#include "Arduino.h"
 #include "index-html.hpp"
 
 // Add your WiFi details
@@ -14,7 +15,7 @@ const char *PARAM_INPUT_2 = "state";
 // Create an AsyncWebServer object on port 80
 AsyncWebServer server(80);
 
-String outputState(int output) {
+String setCheckedStateToSwitch(int output) {
   if (digitalRead(output)) {
     return "checked";
   } else {
@@ -23,22 +24,21 @@ String outputState(int output) {
 }
 
 // Replaces placeholder with button section in your web page
-String processor(const String &var) {
-  // Serial.println(var);
+String htmlKeywordReplacer(const String &var) {
   if (var == "BUTTONPLACEHOLDER") {
     String buttons = "";
     buttons +=
         "<h4>Output - GPIO 12</h4><label class=\"switch\"><input "
         "type=\"checkbox\" onchange=\"toggleCheckbox(this)\" id=\"12\" " +
-        outputState(12) + "><span class=\"slider\"></span></label>";
+        setCheckedStateToSwitch(12) + "><span class=\"slider\"></span></label>";
     buttons +=
         "<h4>Output - GPIO 13</h4><label class=\"switch\"><input "
         "type=\"checkbox\" onchange=\"toggleCheckbox(this)\" id=\"13\" " +
-        outputState(13) + "><span class=\"slider\"></span></label>";
+        setCheckedStateToSwitch(13) + "><span class=\"slider\"></span></label>";
     buttons +=
         "<h4>Output - GPIO 14</h4><label class=\"switch\"><input "
         "type=\"checkbox\" onchange=\"toggleCheckbox(this)\" id=\"14\" " +
-        outputState(14) + "><span class=\"slider\"></span></label>";
+        setCheckedStateToSwitch(14) + "><span class=\"slider\"></span></label>";
     return buttons;
   }
   return String();
@@ -55,19 +55,11 @@ void setup() {
   pinMode(14, OUTPUT);
   digitalWrite(14, LOW);
 
-  // Connect to Wi-Fi
-  WiFi.begin(wifiSSID, wifiPassword);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.println("Connecting to WiFi..");
-  }
-
-  // Print ESP Local IP Address
-  Serial.println(WiFi.localIP());
+  connectToWifi();
 
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send_P(200, "text/html", index_html, processor);
+    request->send_P(200, "text/html", index_html, htmlKeywordReplacer);
   });
 
   // Send a GET request to
@@ -97,3 +89,15 @@ void setup() {
 }
 
 void loop() {}
+
+void connectToWifi() {
+  WiFi.begin(wifiSSID, wifiPassword);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi..");
+  }
+
+   // Print ESP Local IP Address
+  Serial.println(WiFi.localIP());
+}

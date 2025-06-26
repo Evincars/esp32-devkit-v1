@@ -1,5 +1,5 @@
-#include <WiFi.h>
-
 #pragma once
+
+#include <WiFi.h>
 
 extern const char index_html[];

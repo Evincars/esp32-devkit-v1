@@ -5,8 +5,11 @@
 
 #include "index-html.hpp"
 
-class HttpServer {
+class HttpControllers {
  public:
+  void handleRoutes(AsyncWebServer &server);
+
+ private:
   void rootController(AsyncWebServer &server);
   void updateController(AsyncWebServer &server);
 };

@@ -5,7 +5,7 @@
 #include "Adafruit_AM2320.h"
 #include "Adafruit_Sensor.h"
 #include "Arduino.h"
-#include "index-html.hpp"
+#include "http-controllers.hpp"
 
 const char *wifiSSID = "Vysehrad";
 const char *wifiPassword = "hesloheslo";
@@ -14,6 +14,7 @@ const char *PARAM_INPUT_1 = "output";
 const char *PARAM_INPUT_2 = "state";
 
 AsyncWebServer httpServer(80);  // Create an AsyncWebServer object on port 80
+HttpControllers httpControllers;
 Adafruit_AM2320 am2320 = Adafruit_AM2320();
 
 void printTemperatureAndHumidity() {
@@ -34,6 +35,7 @@ void setup() {
   digitalWrite(13, LOW);
 
   connectToWifi();
+  httpControllers.handleRoutes(httpServer);
 
   httpServer.begin();  // Start http server
   am2320.begin();

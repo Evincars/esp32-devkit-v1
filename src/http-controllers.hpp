@@ -7,9 +7,13 @@
 
 class HttpControllers {
  public:
-  void handleRoutes(AsyncWebServer &server);
+  HttpControllers(AsyncWebServer &server);
+  void handleRoutes();
 
  private:
-  void rootController(AsyncWebServer &server);
-  void updateController(AsyncWebServer &server);
+  AsyncWebServer server;
+  const char *PARAM_INPUT_1 = "output";
+  const char *PARAM_INPUT_2 = "state";
+  void rootController();
+  void updateController();
 };

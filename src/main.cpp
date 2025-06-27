@@ -10,11 +10,8 @@
 const char *wifiSSID = "Vysehrad";
 const char *wifiPassword = "hesloheslo";
 
-const char *PARAM_INPUT_1 = "output";
-const char *PARAM_INPUT_2 = "state";
-
 AsyncWebServer httpServer(80);  // Create an AsyncWebServer object on port 80
-HttpControllers httpControllers;
+HttpControllers httpControllers = HttpControllers(httpServer);
 Adafruit_AM2320 am2320 = Adafruit_AM2320();
 
 void printTemperatureAndHumidity() {
@@ -35,7 +32,7 @@ void setup() {
   digitalWrite(13, LOW);
 
   connectToWifi();
-  httpControllers.handleRoutes(httpServer);
+  httpControllers.handleRoutes();
 
   httpServer.begin();  // Start http server
   am2320.begin();

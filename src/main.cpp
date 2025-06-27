@@ -1,18 +1,20 @@
-#include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
-#include <WiFi.h>
-
+#include "Arduino.h"
 #include "Adafruit_AM2320.h"
 #include "Adafruit_Sensor.h"
-#include "Arduino.h"
+#include "TM1638plus.h"
+
+#include "wifi-handler.hpp"
 #include "http-controllers.hpp"
 
-const char *wifiSSID = "Vysehrad";
-const char *wifiPassword = "hesloheslo";
+const int LEDPinForSwitch = 13;
+const int DIOPinLedKeyBoard = 27;
+const int CLKPinLedKeyBoard = 14;
+const int STBPinLedKeyBoard = 12;
 
 AsyncWebServer httpServer(80);  // Create an AsyncWebServer object on port 80
 HttpControllers httpControllers;
 Adafruit_AM2320 am2320 = Adafruit_AM2320();
+TM1638plus tm1638(DIOPinLedKeyBoard, CLKPinLedKeyBoard, STBPinLedKeyBoard);
 
 void printTemperatureAndHumidity() {
   Serial.print("Temp: ");
@@ -28,8 +30,11 @@ void printTemperatureAndHumidity() {
 void setup() {
   Serial.begin(115200);
 
-  pinMode(13, OUTPUT);
-  digitalWrite(13, LOW);
+  pinMode(LEDPinForSwitch, OUTPUT);
+  digitalWrite(LEDPinForSwitch, LOW);
+  pinMode(DIOPinLedKeyBoard, OUTPUT);
+  pinMode(CLKPinLedKeyBoard, OUTPUT);
+  pinMode(STBPinLedKeyBoard, OUTPUT);
 
   connectToWifi();
   httpControllers.handleRoutes(httpServer);
@@ -40,15 +45,4 @@ void setup() {
 
 void loop() {
   printTemperatureAndHumidity();
-}
-
-void connectToWifi() {
-  WiFi.begin(wifiSSID, wifiPassword);
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.println("Connecting to WiFi..");
-  }
-
-  Serial.println(WiFi.localIP());
 }

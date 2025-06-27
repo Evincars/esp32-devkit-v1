@@ -24,24 +24,19 @@ String htmlKeywordReplacer(const String &var) {
   return String();
 }
 
-HttpControllers::HttpControllers(AsyncWebServer &server)
-  : server(server) // use initializer list to bind reference
-{
+void HttpControllers::handleRoutes(AsyncWebServer &server) {
+  rootController(server);
+  updateController(server);
 }
 
-void HttpControllers::handleRoutes() {
-  rootController();
-  updateController();
-}
-
-void HttpControllers::rootController() {
-  this->server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+void HttpControllers::rootController(AsyncWebServer &server) {
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send_P(200, "text/html", index_html, htmlKeywordReplacer);
   });
 }
 
-void HttpControllers::updateController() {
-  this->server.on("/update", HTTP_GET, [this](AsyncWebServerRequest *request) {
+void HttpControllers::updateController(AsyncWebServer &server) {
+  server.on("/update", HTTP_GET, [this](AsyncWebServerRequest *request) {
     String inputMessage1;
     String inputMessage2;
 

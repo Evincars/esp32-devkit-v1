@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "Adafruit_AM2320.h"
 #include "Adafruit_Sensor.h"
-#include "TM1638plus.h"
+#include <TM1638lite.h>
 
 #include "wifi-handler.hpp"
 #include "http-controllers.hpp"
@@ -14,7 +14,7 @@ const int STBPinLedKeyBoard = 4;
 AsyncWebServer httpServer(80);  // Create an AsyncWebServer object on port 80
 HttpControllers httpControllers;
 Adafruit_AM2320 am2320 = Adafruit_AM2320();
-// TM1638plus tm(DIOPinLedKeyBoard, CLKPinLedKeyBoard, STBPinLedKeyBoard, true);
+TM1638lite tm(STBPinLedKeyBoard, CLKPinLedKeyBoard, DIOPinLedKeyBoard);
 
 void printTemperatureAndHumidity() {
   Serial.print("Temp: ");
@@ -32,16 +32,12 @@ void setup() {
 
   pinMode(LEDPinForSwitch, OUTPUT);
   digitalWrite(LEDPinForSwitch, LOW);
-  // pinMode(DIOPinLedKeyBoard, OUTPUT);
-  // pinMode(CLKPinLedKeyBoard, OUTPUT);
-  // pinMode(STBPinLedKeyBoard, OUTPUT);
 
   connectToWifi();
   httpControllers.handleRoutes(httpServer);
 
-  // tm.reset();
-  // tm.displayBegin();
-  // tm.brightness(7);
+  tm.reset();
+  tm.displayText("EvinCars");
 
   httpServer.begin();  // Start http server
   am2320.begin();
@@ -49,9 +45,4 @@ void setup() {
 
 void loop() {
   printTemperatureAndHumidity();
-  // tm.displayText("EvinCars");
-  // tm.setLEDs(0xFFFFFFFF);  // Clear all LEDs
-  // delay(1000);
-  // tm.setLEDs(0x00000000);  // Turn off all LEDs
-  // tm.displayText("Home Test");
 }
